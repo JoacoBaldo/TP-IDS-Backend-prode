@@ -7,15 +7,11 @@ Fixture = {
     "stadium": str,
     "city": str,
     "date_time": datetime.datetime, 
+    "local_goals": int,
     "phase": str,
+    "visitor_goals": int,
 }
 
-Result = {
-    "game_id": int,
-    "local_goals": int,
-    "visitor_goals": int,
-    "create_at": datetime.datetime,
-}
 
 Prediction = {
     "user_id": int,
