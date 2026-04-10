@@ -1,5 +1,5 @@
 from infrastructure.db_conn.mysql_config import get_connection
-from entities import User
+from entities.users import User
 
 def create_UserRepository(user: User) -> dict:
     conn = get_connection()
