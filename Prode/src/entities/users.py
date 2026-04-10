@@ -4,5 +4,5 @@ User = {
     "id": int,
     "email": str,
     "password": str,
-    "create_at": datetime.datetime,
+    "create_at": datetime,
 }

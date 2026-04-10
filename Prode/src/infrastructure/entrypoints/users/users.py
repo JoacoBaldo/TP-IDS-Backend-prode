@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify
-from Prode.src.usecases.users.create_user import execute
+from flask import request, jsonify
+from usecases.users.create_user import execute
 from contracts.request.users_request import create_user_request
 
 

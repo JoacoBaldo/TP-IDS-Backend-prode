@@ -1,7 +1,8 @@
 from infrastructure.errors.users import ErrEmailAlreadyExists, ErrMissingEmailOrPassword, ErrPasswordTooShort, ErrInvalidEmailFormat
-from Prode.src.contracts.response.users_response import create_user_response
+from contracts.response.users_response import create_user_response
 from repository.users.create_users import create_UserRepository
-from entities import User
+from entities.users import User
+import bcrypt
 
 def execute(user_req: User) -> dict:
 
@@ -11,11 +12,24 @@ def execute(user_req: User) -> dict:
     if validate_email_exists(user_req["email"]):
         return ErrEmailAlreadyExists
 
+    # Encriptar la contraseña antes de guardar
+    hashed_password = hash_password(user_req["password"])
+    user_req["password"] = hashed_password
+
     err = create_UserRepository(user_req)
     if err != None:
         return err
 
-    return create_user_response(user_req)
+    # No devolver la contraseña en la respuesta
+    user_response = user_req.copy()
+    del user_response["password"]
+    return create_user_response(user_response)
+
+
+def hash_password(password: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password.decode('utf-8')
 
 
 def validate_user_data(user_req: User) -> dict:

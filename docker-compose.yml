@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: prode_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: prode
+      MYSQL_USER: prode_user
+      MYSQL_PASSWORD: prode_pass123
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      # Persistencia de datos
+      - mysql_data:/var/lib/mysql
+      # Scripts SQL para inicialización
+      - ./Prode/src/config/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./Prode/src/config/database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+      # Configuración MySQL personalizada
+      - ./mysql-config/my.cnf:/etc/mysql/conf.d/my.cnf
+    networks:
+      - prode_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 40s
+
+  # phpMyAdmin (opcional, para administración visual)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: prode_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root123456
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - prode_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  prode_network:
+    driver: bridge
