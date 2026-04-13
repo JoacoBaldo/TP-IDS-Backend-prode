@@ -12,7 +12,6 @@ def execute(user_req: User) -> dict:
     if validate_email_exists(user_req["email"]):
         return ErrEmailAlreadyExists
 
-    # Encriptar la contraseña antes de guardar
     hashed_password = hash_password(user_req["password"])
     user_req["password"] = hashed_password
 
@@ -20,7 +19,6 @@ def execute(user_req: User) -> dict:
     if err != None:
         return err
 
-    # No devolver la contraseña en la respuesta
     user_response = user_req.copy()
     del user_response["password"]
     return create_user_response(user_response)
@@ -35,7 +33,7 @@ def hash_password(password: str) -> str:
 def validate_user_data(user_req: User) -> dict:
     if not user_req.get("email") or not user_req.get("password"):
         return ErrMissingEmailOrPassword
-    
+
     if len(user_req["password"]) < 6:
         return ErrPasswordTooShort
     
