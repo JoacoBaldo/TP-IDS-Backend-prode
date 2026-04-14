@@ -6,7 +6,7 @@ Fixture = {
     "visitor_team": str,
     "stadium": str,
     "city": str,
-    "date_time": datetime.datetime, 
+    "date_time": datetime, 
     "local_goals": int,
     "phase": str,
     "visitor_goals": int,

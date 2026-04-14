@@ -1,0 +1,86 @@
+openapi: 3.0.0
+info:
+  title: TP Backend API
+  description: API para el TP de Introducción al Desarrollo de Software
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+    description: Desarrollo
+
+paths:
+  /register:
+    post:
+      tags:
+        - Users
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema con email y password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Usuario creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Error en la solicitud (datos inválidos o email ya existe)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email del usuario
+          example: test@example.com
+        password:
+          type: string
+          minLength: 6
+          description: Password del usuario (mínimo 6 caracteres)
+          example: password123
+
+    UserResponse:
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email del usuario creado
+          example: test@example.com
+        message:
+          type: string
+          description: Mensaje de respuesta
+          example: Usuario creado exitosamente
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 201
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - status_code
+      properties:
+        error:
+          type: string
+          description: Mensaje de error
+          example: Email ya existe
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 400
