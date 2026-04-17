@@ -8,4 +8,5 @@ def create_user():
     user_data = create_user_request(data)
     response = create_user_execute(user_data)
     
-    return jsonify(response)
+    status_code = response.pop("status_code", 200)
+    return jsonify(response), status_code
