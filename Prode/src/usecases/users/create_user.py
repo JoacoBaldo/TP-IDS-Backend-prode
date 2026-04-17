@@ -1,4 +1,4 @@
-from infrastructure.errors.users import ErrEmailAlreadyExists, ErrMissingEmailOrPassword, ErrPasswordTooShort, ErrInvalidEmailFormat
+from infrastructure.errors.users import ErrEmailAlreadyExists, ErrMissingInformation, ErrPasswordTooShort, ErrInvalidEmailFormat
 from contracts.response.users_response import create_user_response
 from repository.users.create_users import create_UserRepository
 from entities.users import User
@@ -31,8 +31,8 @@ def hash_password(password: str) -> str:
 
 
 def validate_user_data(user_req: User) -> dict:
-    if not user_req.get("email") or not user_req.get("password"):
-        return ErrMissingEmailOrPassword
+    if not user_req.get("email") or not user_req.get("password") or not user_req.get("name"):
+        return ErrMissingInformation
 
     if len(user_req["password"]) < 6:
         return ErrPasswordTooShort
