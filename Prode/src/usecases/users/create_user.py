@@ -1,7 +1,7 @@
 from infrastructure.errors.users import ErrEmailAlreadyExists, ErrMissingInformation, ErrPasswordTooShort, ErrInvalidEmailFormat
 from contracts.response.users_response import create_user_response
 from repository.users.create_users import create_UserRepository
-from entities import User
+from entities.users import User
 import bcrypt
 
 def execute(user_req: User) -> dict:
