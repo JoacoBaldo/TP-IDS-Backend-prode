@@ -13,6 +13,9 @@ def execute(fixture_id: int, payload: dict) -> dict:
     if fixture_id < 1:
         return ErrPartidoIdInvalido
 
+    if not payload:
+        return ErrResultadoCamposFaltantes
+
     if "goles_local" not in payload or "goles_visitante" not in payload:
         return ErrResultadoCamposFaltantes
 
