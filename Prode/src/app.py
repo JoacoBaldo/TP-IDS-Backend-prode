@@ -2,6 +2,7 @@
 import sys
 import os
 from infrastructure.entrypoints.users import users
+from infrastructure.entrypoints.partidos.partidos import partidos_bp
 from flask import Flask, request, Blueprint
 from contracts.request.users_request import create_user_request
 from contracts.response.users_response import create_user_response
@@ -17,8 +18,7 @@ def create_user_endpoint():
     return users.create_user()
 
 app.register_blueprint(users_bp)
-
-
+app.register_blueprint(partidos_bp)
 
 
 
