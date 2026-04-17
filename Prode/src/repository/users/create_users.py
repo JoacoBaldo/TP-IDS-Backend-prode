@@ -5,8 +5,8 @@ def create_UserRepository(user: User) -> dict:
     conn = get_connection()
     try:
         with conn.cursor() as cursor:
-            sql = "INSERT INTO users (email, password) VALUES (%s, %s)"
-            cursor.execute(sql, (user['email'], user['password']))
+            sql = "INSERT INTO users (email, name, password) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (user['email'], user['name'], user['password']))
             conn.commit()
     
     except Exception as e:
