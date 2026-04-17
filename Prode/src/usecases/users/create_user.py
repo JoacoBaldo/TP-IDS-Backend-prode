@@ -41,8 +41,3 @@ def validate_user_data(user_req: User) -> dict:
         return ErrInvalidEmailFormat
 
     return None
-
-
-def validate_email_exists(email: str) -> bool:
-    # Aquí iría la lógica para verificar si el email ya existe en la base de datos
-    return False
