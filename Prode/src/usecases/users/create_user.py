@@ -9,9 +9,6 @@ def execute(user_req: User) -> dict:
     if validate_user_data(user_req) != None:
         return validate_user_data(user_req)
     
-    if validate_email_exists(user_req["email"]):
-        return ErrEmailAlreadyExists
-
     hashed_password = hash_password(user_req["password"])
     user_req["password"] = hashed_password
 
@@ -41,8 +38,3 @@ def validate_user_data(user_req: User) -> dict:
         return ErrInvalidEmailFormat
 
     return None
-
-
-def validate_email_exists(email: str) -> bool:
-    # Aquí iría la lógica para verificar si el email ya existe en la base de datos
-    return False
