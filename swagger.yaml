@@ -56,18 +56,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MatchDeleteResponse'
+              example:
+                message: "El partido se eliminó correctamente"
+                status_code: 200
+        '400':
+          description: Error - ID de partido inválido o mal formado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "El match_id es inválido. Por favor, ingresa un ID válido"
+                status_code: 400
         '404':
           description: Partido no encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "El partido no existe en la base de datos"
+                status_code: 404
         '500':
           description: Error del servidor
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Error interno del servidor. Intenta más tarde"
+                status_code: 500
 
 components:
   schemas:
@@ -113,11 +131,11 @@ components:
         error:
           type: string
           description: Mensaje de error
-          example: Email ya existe
+          example: El partido no existe
         status_code:
           type: integer
           description: Código de estado HTTP
-          example: 400
+          example: 404
     MatchDeleteResponse:
       type: object
       properties:
