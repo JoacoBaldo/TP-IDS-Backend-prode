@@ -21,6 +21,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+    /users/update:
+    put:
+      tags:
+        - Users
+      summary: Actualizar usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Error
+        '404':
+          description: No existe
       responses:
         '201':
           description: Usuario creado exitosamente
@@ -69,6 +87,22 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 201
+      UserUpdate:
+        type: object
+        required:
+         - id
+         - name
+         - email
+        properties:
+          id:
+            type: integer
+            example: 8
+          name:
+            type: string
+            example: Carlos Updated
+          email:
+            type: string
+            example: carlos@gmail.com
 
     ErrorResponse:
       type: object
