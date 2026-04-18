@@ -6,7 +6,7 @@ from infrastructure.entrypoints.partidos import partidos
 from flask import Flask, Blueprint
 
 app = Flask(__name__)
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
@@ -15,6 +15,16 @@ partidos_bp = Blueprint('partidos', __name__, url_prefix='/partidos')
 @users_bp.route('/register', methods=['POST'])
 def create_user_endpoint():
     return users.create_user()
+
+
+@app.route('/ranking', methods=['GET'])
+def get_users_ranking_endpoint():
+    return users.get_users_ranking()
+
+
+@app.route('/usuarios', methods=['GET'])
+def get_users_list_endpoint():
+    return users.get_users_list()
 
 
 @partidos_bp.route('/<int:partido_id>/resultado', methods=['PUT'])
