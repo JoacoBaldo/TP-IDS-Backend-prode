@@ -4,6 +4,7 @@ from contracts.request.partidos_request import partido_reemplazo_request, partid
 from usecases.partidos.replace_partido import execute as replace_partido_execute
 from usecases.partidos.update_resultado import execute as update_resultado_execute
 from usecases.partidos.get_partidos import execute as get_partidos_execute
+from usecases.partidos.get_partido import execute as get_partido_execute
 
 
 def _as_http(resp: dict):
@@ -34,3 +35,8 @@ def put_replace_partido(partido_id: int):
     body = request.get_json() or {}
     payload = partido_reemplazo_request(body)
     return _as_http(replace_partido_execute(partido_id, payload))
+
+
+def get_partido_by_id(partido_id: int):
+    respuesta = get_partido_execute(partido_id)
+    return _as_http(respuesta)
