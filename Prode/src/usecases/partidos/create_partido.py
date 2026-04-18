@@ -9,7 +9,7 @@ from infrastructure.errors.partidos import (
 from repository.partidos.replace_fixture_core import create_fixture_core
 
 def execute(payload: dict) -> dict:
-    # Validamos que no falte ningún dato
+
     if not payload:
         return ErrReemplazoCamposFaltantes
 
@@ -28,7 +28,6 @@ def execute(payload: dict) -> dict:
     if fase == "" or fecha == "":
         return ErrFaseVacia 
 
-    # Formateamos la fecha
     if fecha.endswith("Z"):
         fecha = fecha[:-1] + "+00:00"
     try:
@@ -39,7 +38,6 @@ def execute(payload: dict) -> dict:
     if fecha_dt.tzinfo is not None:
         fecha_dt = fecha_dt.astimezone(timezone.utc).replace(tzinfo=None)
 
-    # Guardamos en la base de datos usando lo que armó Joaco
     nuevo_partido, err = create_fixture_core(
         equipo_local, equipo_visitante, fecha_dt, fase
     )
