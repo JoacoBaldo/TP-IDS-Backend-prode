@@ -16,6 +16,9 @@ partidos_bp = Blueprint('partidos', __name__, url_prefix='/partidos')
 def create_user_endpoint():
     return users.create_user()
 
+@partidos_bp.route('', methods=['GET'])
+def get_partidos_endpoint():
+    return partidos.get_partidos()
 
 @partidos_bp.route('/<int:partido_id>/resultado', methods=['PUT'])
 def put_resultado_endpoint(partido_id: int):
