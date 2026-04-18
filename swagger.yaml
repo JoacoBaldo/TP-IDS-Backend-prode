@@ -35,6 +35,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /matches/{match_id}:
+    delete:
+      tags:
+        - Matches
+      summary: Eliminar un partido
+      description: Elimina un partido de la base de datos por su ID
+      parameters:
+        - name: match_id
+          in: path
+          required: true
+          description: ID del partido a eliminar
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Partido eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchDeleteResponse'
+        '404':
+          description: Partido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     User:
@@ -84,3 +118,10 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 400
+    MatchDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de respuesta
+          example: Match deleted successfully
