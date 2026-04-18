@@ -17,6 +17,11 @@ def create_user_endpoint():
     return users.create_user()
 
 
+@users_bp.route('/<int:user_id>', methods=['DELETE'])
+def delete_user_endpoint(user_id):
+    return users.delete_usuario(user_id)
+
+
 @partidos_bp.route('/<int:partido_id>/resultado', methods=['PUT'])
 def put_resultado_endpoint(partido_id: int):
     return partidos.put_resultado(partido_id)
@@ -25,6 +30,11 @@ def put_resultado_endpoint(partido_id: int):
 @partidos_bp.route('/<int:partido_id>', methods=['PUT'])
 def put_replace_partido_endpoint(partido_id: int):
     return partidos.put_replace_partido(partido_id)
+
+
+@partidos_bp.route('', methods=['POST'])
+def create_partido_endpoint():
+    return partidos.post_partido()
 
 
 app.register_blueprint(users_bp)
