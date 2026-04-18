@@ -1,4 +1,4 @@
-from infrastructure.errors.users import ErrEmailAlreadyExists, ErrMissingEmailOrPassword, ErrPasswordTooShort, ErrInvalidEmailFormat
+from infrastructure.errors.users import ErrEmailAlreadyExists, ErrMissingInformation, ErrPasswordTooShort, ErrInvalidEmailFormat
 from contracts.response.users_response import create_user_response
 from repository.users.create_users import create_UserRepository
 from entities.users import User
@@ -9,9 +9,6 @@ def execute(user_req: User) -> dict:
     if validate_user_data(user_req) != None:
         return validate_user_data(user_req)
     
-    if validate_email_exists(user_req["email"]):
-        return ErrEmailAlreadyExists
-
     hashed_password = hash_password(user_req["password"])
     user_req["password"] = hashed_password
 
@@ -31,8 +28,8 @@ def hash_password(password: str) -> str:
 
 
 def validate_user_data(user_req: User) -> dict:
-    if not user_req.get("email") or not user_req.get("password"):
-        return ErrMissingEmailOrPassword
+    if not user_req.get("email") or not user_req.get("password") or not user_req.get("name"):
+        return ErrMissingInformation
 
     if len(user_req["password"]) < 6:
         return ErrPasswordTooShort
@@ -41,8 +38,3 @@ def validate_user_data(user_req: User) -> dict:
         return ErrInvalidEmailFormat
 
     return None
-
-
-def validate_email_exists(email: str) -> bool:
-    # Aquí iría la lógica para verificar si el email ya existe en la base de datos
-    return False
