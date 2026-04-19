@@ -36,12 +36,19 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /users/{user_id}:
-    parameters:
-      - $ref: '#/components/parameters/IdUsuario'
     get:
-      summary: "Obtener un usuario por ID"
       tags:
         - Users
+      summary: Obtener un usuario por ID
+      description: Obtiene los detalles de un usuario específico por su ID
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
           description: Detalle del usuario
@@ -49,19 +56,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Usuario'
-        '400':
-          $ref: '#/components/responses/BadRequest'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          $ref: '#/components/responses/InternalServerError'
-                $ref: '#/components/schemas/Usuario'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /partidos/{partido_id}/resultado:
     put:

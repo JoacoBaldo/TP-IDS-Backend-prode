@@ -1,7 +1,7 @@
 from flask import request, jsonify
-from infrastructure.db_conn.mysql_config import get_connection
 from contracts.request.users_request import create_user_request
 from usecases.users.create_user import execute as create_user_execute
+from usecases.users.get_user import execute as get_user_execute
 
 
 def create_user():
@@ -14,17 +14,6 @@ def create_user():
 
 
 def get_user(user_id: int):
-    conn = get_connection()
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute("SELECT id, name, email FROM users WHERE id = %s", (user_id,))
-            user = cursor.fetchone()
-            if not user:
-                return jsonify({"error": "Usuario no encontrado", "status_code": 404}), 404
-            return jsonify({
-                "id": user['id'],
-                "name": user['name'],
-                "email": user['email']
-            }), 200
-    finally:
-        conn.close()
+    response = get_user_execute(user_id)
+    status_code = response.pop("status_code", 200)
+    return jsonify(response), status_code
