@@ -2,8 +2,8 @@
 import sys
 import os
 from infrastructure.entrypoints.users import users
-from infrastructure.entrypoints.partidos import partidos
 from flask import Flask, Blueprint
+from infrastructure.entrypoints.partidos import partidos
 
 app = Flask(__name__)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -21,15 +21,21 @@ def create_user_endpoint():
 def get_user_endpoint(user_id: int):
     return users.get_user(user_id)
 
-
 @partidos_bp.route('/<int:partido_id>/resultado', methods=['PUT'])
 def put_resultado_endpoint(partido_id: int):
     return partidos.put_resultado(partido_id)
 
-
 @partidos_bp.route('/<int:partido_id>', methods=['PUT'])
 def put_replace_partido_endpoint(partido_id: int):
     return partidos.put_replace_partido(partido_id)
+
+@partidos_bp.route('/<int:partido_id>', methods=['DELETE'])
+def delete_partido_endpoint(partido_id: int):
+    return partidos.delete_partido(partido_id)
+
+@partidos_bp.route('/<int:partido_id>/prediccion', methods=['POST'])
+def post_prediccion_endpoint(partido_id: int):
+    return partidos.post_prediccion(partido_id)
 
 
 app.register_blueprint(users_bp)
