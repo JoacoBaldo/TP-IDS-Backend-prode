@@ -27,6 +27,11 @@ def put_replace_partido_endpoint(partido_id: int):
     return partidos.put_replace_partido(partido_id)
 
 
+@partidos_bp.route('/<int:partido_id>/prediccion', methods=['POST'])
+def post_prediccion_endpoint(partido_id: int):
+    return partidos.post_prediccion(partido_id)
+
+
 app.register_blueprint(users_bp)
 app.register_blueprint(partidos_bp)
 
