@@ -3,16 +3,14 @@ info:
   title: TP Backend API
   description: API para el TP de Introducción al Desarrollo de Software
   version: 1.0.0
-
 servers:
-  - url: http://localhost:5000
-    description: Desarrollo
-
+- url: http://localhost:5000
+  description: Desarrollo
 paths:
   /register:
     post:
       tags:
-        - Users
+      - Users
       summary: Crear un nuevo usuario
       description: Crea un nuevo usuario en el sistema con email y password
       requestBody:
@@ -34,14 +32,37 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+  /partidos/{id}/prediccion:
+    parameters:
+    - $ref: '#/components/parameters/IdPartido'
+    post:
+      summary: Registrar una predicción para un partido
+      tags:
+      - Predicciones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Prediccion'
+      responses:
+        '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     User:
       type: object
       required:
-        - email
-        - password
+      - email
+      - password
       properties:
         email:
           type: string
@@ -53,7 +74,6 @@ components:
           minLength: 6
           description: Password del usuario (mínimo 6 caracteres)
           example: password123
-
     UserResponse:
       type: object
       properties:
@@ -69,12 +89,11 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 201
-
     ErrorResponse:
       type: object
       required:
-        - error
-        - status_code
+      - error
+      - status_code
       properties:
         error:
           type: string
@@ -84,3 +103,68 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 400
+    Prediccion:
+      type: object
+      required:
+      - id_usuario
+      - local
+      - visitante
+      properties:
+        id_usuario:
+          type: integer
+          example: 1
+        local:
+          type: integer
+          minimum: 0
+          example: 2
+        visitante:
+          type: integer
+          minimum: 0
+          example: 1
+  parameters:
+    IdPartido:
+      name: id
+      in: path
+      required: true
+      description: Identificador del partido
+      schema:
+        type: integer
+        minimum: 1
+  responses:
+    Created:
+      description: Requisito procesado exitosamente y recurso creado
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status_code:
+                type: integer
+                example: 201
+              message:
+                type: string
+                example: Predicción registrada con éxito
+    BadRequest:
+      description: Error en la petición (datos faltantes o inválidos)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflicto (La predicción ya existe)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
