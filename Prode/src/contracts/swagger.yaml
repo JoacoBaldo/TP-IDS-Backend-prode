@@ -34,6 +34,51 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                
+  /usuarios/{id}:
+    delete:
+      tags:
+        - Users
+      summary: Eliminar un usuario
+      description: Elimina un usuario del sistema y todas sus predicciones asociadas.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del usuario a eliminar
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario eliminado correctamente
+        '404':
+          description: Usuario no encontrado
+
+  /partidos:
+    post:
+      tags:
+        - Partidos
+      summary: Crear un nuevo partido
+      description: Crea un nuevo partido en el fixture definiendo equipos, fecha y fase.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartidoReemplazoRequest'
+      responses:
+        '201':
+          description: Partido creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartidoDetalleResponse'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /partidos/{id}/resultado:
     put:

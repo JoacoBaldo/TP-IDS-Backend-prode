@@ -1,13 +1,17 @@
-from infrastructure.db_conn.db_connection import get_db_connection
+from infrastructure.db_conn.mysql_config import get_connection
 
 def delete_user_core(user_id: int):
 
-    connection = get_db_connection()
+    connection = get_connection()
     cursor = connection.cursor()
     
     try:
-        query = "DELETE FROM users WHERE id = %s"
-        cursor.execute(query, (user_id,))
+        query_predicciones = "DELETE FROM predicciones WHERE user_id = %s"
+        cursor.execute(query_predicciones, (user_id,))
+        
+        query_user = "DELETE FROM users WHERE id = %s"
+        cursor.execute(query_user, (user_id,))
+        
         connection.commit()
         return user_id, None
         
