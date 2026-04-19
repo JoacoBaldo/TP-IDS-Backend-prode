@@ -23,6 +23,24 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema con email, name y password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
           description: Usuario creado exitosamente
           content:
             application/json:
