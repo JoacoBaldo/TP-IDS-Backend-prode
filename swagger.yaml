@@ -53,6 +53,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /users/{user_id}:
+    get:
+      tags:
+        - Users
+      summary: Obtener un usuario por ID
+      description: Obtiene los detalles de un usuario específico por su ID
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Detalle del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /partidos/{partido_id}/resultado:
     put:
       tags:
@@ -185,6 +219,36 @@ paths:
                 status_code: 500
 
 components:
+  parameters:
+    IdUsuario:
+      name: user_id
+      in: path
+      required: true
+      description: ID del usuario
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    BadRequest:
+      description: Solicitud incorrecta
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
   schemas:
     User:
       type: object
@@ -253,6 +317,23 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 200
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+          example: 1
+        name:
+          type: string
+          description: Nombre del usuario
+          example: Juan Pérez
+        email:
+          type: string
+          format: email
+          description: Email del usuario
+          example: juan@example.com
 
     PartidoResultadoRequest:
       type: object
