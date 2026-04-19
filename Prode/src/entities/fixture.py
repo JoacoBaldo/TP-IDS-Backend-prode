@@ -11,11 +11,3 @@ Fixture = {
     "phase": str,
     "visitor_goals": int,
 }
-
-
-Prediction = {
-    "user_id": int,
-    "game_id": int,
-    "predicted_local_goals": int,
-    "predicted_visitor_goals": int,
-}

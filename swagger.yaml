@@ -136,13 +136,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /partidos/{id}/prediccion:
-    parameters:
-      - $ref: '#/components/parameters/IdPartido'
+  /partidos/{partido_id}/prediccion:
     post:
-      summary: Registrar una predicción para un partido
       tags:
         - Predicciones
+      summary: Registrar una predicción para un partido
+      description: Registra una predicción de goles para un partido específico
+      parameters:
+        - name: partido_id
+          in: path
+          required: true
+          description: Identificador del partido
+          schema:
+            type: integer
+            minimum: 1
       requestBody:
         required: true
         content:
@@ -151,15 +158,35 @@ paths:
               $ref: '#/components/schemas/Prediccion'
       responses:
         '201':
-          $ref: '#/components/responses/Created'
+          description: Predicción registrada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Created'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Error en la solicitud (datos inválidos)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Usuario o partido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          $ref: '#/components/responses/Conflict'
+          description: El usuario ya tiene una predicción para este partido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -332,16 +359,6 @@ components:
           type: integer
           minimum: 0
           example: 1
-
-  parameters:
-    IdPartido:
-      name: id
-      in: path
-      required: true
-      description: Identificador del partido
-      schema:
-        type: integer
-        minimum: 1
 
   responses:
     Created:

@@ -3,23 +3,29 @@
 
 USE prode;
 
--- Insertar usuarios de ejemplo
-INSERT INTO users (email, password) VALUES 
-('admin@prode.com', 'hashed_password_123'),
-('juan@prode.com', 'hashed_password_456'),
-('maria@prode.com', 'hashed_password_789'),
-('carlos@prode.com', 'hashed_password_abc')
-ON DUPLICATE KEY UPDATE email = email;
+-- Limpiar datos existentes para evitar conflictos
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE rankings;
+TRUNCATE TABLE predictions;
+TRUNCATE TABLE fixtures;
+TRUNCATE TABLE users;
+SET FOREIGN_KEY_CHECKS = 1;
 
--- Insertar partidos de ejemplo (Copa América 2024)
+-- Insertar usuarios de ejemplo
+INSERT INTO users (email, name, password) VALUES 
+('admin@prode.com', 'Admin', 'hashed_password_123'),
+('juan@prode.com', 'Juan Pérez', 'hashed_password_456'),
+('maria@prode.com', 'María García', 'hashed_password_789'),
+('carlos@prode.com', 'Carlos López', 'hashed_password_abc');
+
+-- Insertar partidos de ejemplo (Mundial 2026)
 INSERT INTO fixtures (local_team, visitor_team, stadium, city, date_time, phase, local_goals, visitor_goals, status) VALUES 
-('Argentina', 'Canadá', 'Mercedes-Benz Stadium', 'Atlanta', '2024-06-20 20:00:00', 'Group A', 2, 0, 'finished'),
-('Perú', 'Chile', 'AT&T Stadium', 'Arlington', '2024-06-21 18:00:00', 'Group A', 0, 0, 'finished'),
-('Ecuador', 'Venezuela', 'Levi\'s Stadium', 'Santa Clara', '2024-06-22 18:00:00', 'Group B', 1, 2, 'finished'),
-('México', 'Jamaica', 'NRG Stadium', 'Houston', '2024-06-22 21:00:00', 'Group B', 1, 0, 'finished'),
-('Argentina', 'Ecuador', 'NRG Stadium', 'Houston', '2024-06-25 21:00:00', 'Quarter-Finals', 1, 1, 'finished'),
-('Venezuela', 'Canadá', 'AT&T Stadium', 'Arlington', '2024-06-26 18:00:00', 'Quarter-Finals', 1, 1, 'finished')
-ON DUPLICATE KEY UPDATE local_team = local_team;
+('Argentina', 'Marruecos', 'MetLife Stadium', 'New Jersey', '2026-06-15 18:00:00', 'Group Stage', 0, 0, 'pending'),
+('Brasil', 'Croacia', 'SoFi Stadium', 'Los Angeles', '2026-06-16 15:00:00', 'Group Stage', 0, 0, 'pending'),
+('España', 'Alemania', 'AT&T Stadium', 'Dallas', '2026-06-17 18:00:00', 'Group Stage', 0, 0, 'pending'),
+('Francia', 'Inglaterra', 'Levi\'s Stadium', 'San Francisco', '2026-06-18 21:00:00', 'Group Stage', 0, 0, 'pending'),
+('Portugal', 'Países Bajos', 'NRG Stadium', 'Houston', '2026-06-19 18:00:00', 'Group Stage', 0, 0, 'pending'),
+('Italia', 'Bélgica', 'Arrowhead Stadium', 'Kansas City', '2026-06-20 15:00:00', 'Group Stage', 0, 0, 'pending');
 
 -- Insertar predicciones de ejemplo
 INSERT INTO predictions (user_id, fixture_id, predicted_local_goals, predicted_visitor_goals, points) VALUES 
@@ -53,8 +59,7 @@ INSERT INTO predictions (user_id, fixture_id, predicted_local_goals, predicted_v
 (4, 3, 0, 2, 0),
 (4, 4, 1, 0, 0),
 (4, 5, 1, 0, 0),
-(4, 6, 0, 1, 0)
-ON DUPLICATE KEY UPDATE user_id = user_id;
+(4, 6, 0, 1, 0);
 
 -- Actualizar rankings iniciales
 INSERT INTO rankings (user_id, total_points, position, phase) 
@@ -64,7 +69,4 @@ SELECT
     ROW_NUMBER() OVER (ORDER BY SUM(points) DESC) as position,
     'General' as phase
 FROM predictions 
-GROUP BY user_id
-ON DUPLICATE KEY UPDATE 
-    total_points = VALUES(total_points),
-    position = VALUES(position);
+GROUP BY user_id;
