@@ -7,7 +7,6 @@ from flask import Flask, Blueprint
 from flask import request, jsonify
 from usecases.users.update_user_use_case import execute as update_user_exec
 
-
 app = Flask(__name__)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -19,21 +18,12 @@ partidos_bp = Blueprint('partidos', __name__, url_prefix='/partidos')
 def create_user_endpoint():
     return users.create_user()
 
-@users_bp.route('/update', methods=['PUT'])
-def update_user_endpoint():
+@users_bp.route('/<int:user_id>', methods=['PUT'])
+def update_user_endpoint(user_id):
     user_req = request.get_json()
 
     if not user_req:
-        return jsonify({"error": "Body vacío"}), 400
-
-    user_id = user_req.get("id")
-    if not user_id:
-        return jsonify({"error": "Falta el ID del usuario"}), 400
-
-    try:
-        user_id = int(user_id)
-    except:
-        return jsonify({"error": "ID inválido"}), 400
+        return jsonify({"error": "Empty body"}), 400
 
     result = update_user_exec(user_id, user_req)
 

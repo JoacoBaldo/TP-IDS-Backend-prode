@@ -1,21 +1,26 @@
-from repository.users.update_users import update_user_repository, validate_email_exists
+import pymysql
+from repository.users.update_users import update_user_repository
+from infrastructure.errors.users import (
+    ErrEmailAlreadyExists,
+    ErrMissingInformation,
+    ErrInvalidId
+)
 
 
 def execute(user_id: int, user_req: dict) -> dict:
     try:
         user_id = int(user_id)
     except:
-        return {"error": "ID inválido", "status_code": 400}
+        return ErrInvalidId
 
     if not user_req.get("name") or not user_req.get("email"):
-        return {"error": "Faltan datos", "status_code": 400}
+        return ErrMissingInformation
 
-    user_encontrado = validate_email_exists(user_req["email"], user_id)
+    try:
+        updated = update_user_repository(user_id, user_req)
 
-    if user_encontrado:
-        return {"error": "Email ya ocupado por otro", "status_code": 400}
-
-    updated = update_user_repository(user_id, user_req)
+    except pymysql.err.IntegrityError:
+        return ErrEmailAlreadyExists
 
     if updated:
         return {
@@ -24,6 +29,6 @@ def execute(user_id: int, user_req: dict) -> dict:
         }
 
     return {
-        "error": "No existe ese ID",
+        "error": "User not found",
         "status_code": 404
     }
