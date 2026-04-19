@@ -1,6 +1,6 @@
 from infrastructure.db_conn.mysql_config import get_connection
 
-def delete_match(match_id):
+def delete_matchRepository(match_id):
     if not match_id:
         raise ValueError("Match ID is required")
 
