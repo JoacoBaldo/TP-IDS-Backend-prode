@@ -1,4 +1,4 @@
-openapi: 3.0.0
+         openapi: 3.0.0
 info:
   title: TP Backend API
   description: API para el TP de Introducción al Desarrollo de Software
@@ -21,24 +21,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
-    /users/update:
-    put:
-      tags:
-        - Users
-      summary: Actualizar usuario
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdate'
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Error
-        '404':
-          description: No existe
       responses:
         '201':
           description: Usuario creado exitosamente
@@ -48,6 +30,45 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           description: Error en la solicitud (datos inválidos)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{user_id}:
+    put:
+      tags:
+        - Users
+      summary: Actualizar usuario
+      description: Actualiza el nombre y email de un usuario existente
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Error en la solicitud (datos inválidos o email duplicado)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado
           content:
             application/json:
               schema:
@@ -179,22 +200,19 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 201
-      UserUpdate:
-        type: object
-        required:
-         - id
-         - name
-         - email
-        properties:
-          id:
-            type: integer
-            example: 8
-          name:
-            type: string
-            example: Carlos Updated
-          email:
-            type: string
-            example: carlos@gmail.com
+
+    UserUpdate:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          example: Carlos Updated
+        email:
+          type: string
+          example: carlos@gmail.com
 
     ErrorResponse:
       type: object
