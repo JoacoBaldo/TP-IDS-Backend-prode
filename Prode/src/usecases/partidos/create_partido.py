@@ -6,7 +6,7 @@ from infrastructure.errors.partidos import (
     ErrFechaInvalida,
     ErrReemplazoCamposFaltantes,
 )
-from repository.partidos.create_fixture_repo import create_fixture_repo
+from repository.partidos.create_fixture_repo import create_fixture
 
 def execute(payload: dict) -> dict:
 
@@ -38,7 +38,12 @@ def execute(payload: dict) -> dict:
     if fecha_dt.tzinfo is not None:
         fecha_dt = fecha_dt.astimezone(timezone.utc).replace(tzinfo=None)
 
-    nuevo_partido, err = create_fixture_repo(equipo_local, equipo_visitante, fecha_dt, fase)
+    nuevo_partido, err = create_fixture({
+    'equipo_local': equipo_local,
+    'equipo_visitante': equipo_visitante,
+    'fecha': fecha_dt,
+    'fase': fase
+    })
 
     if err is not None:
         return err

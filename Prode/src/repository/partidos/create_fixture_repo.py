@@ -1,14 +1,37 @@
 from infrastructure.db_conn.mysql_config import get_connection
-def create_fixture_repo(local_team, visitor_team, date_time, phase):
-    conn = get_connection()
+def create_fixture(partido_data):
+    connection = None  
     try:
-        with conn.cursor() as cursor:
-            sql = "INSERT INTO fixtures (local_team, visitor_team, date_time, phase) VALUES (%s, %s, %s, %s)"
-            cursor.execute(sql, (local_team, visitor_team, date_time, phase))
-            nuevo_id = cursor.lastrowid 
-        conn.commit()
-        return {"id": nuevo_id, "local_team": local_team, "visitor_team": visitor_team, "fecha": date_time, "fase": phase}, None
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        local_team = partido_data.get('equipo_local') 
+        visitor_team = partido_data.get('equipo_visitante')
+        date_time = partido_data.get('fecha')
+        phase = partido_data.get('fase')
+
+        sql = "INSERT INTO fixtures (local_team, visitor_team, date_time, phase) VALUES (%s, %s, %s, %s)"
+        cursor.execute(sql, (local_team, visitor_team, date_time, phase))
+        
+        nuevo_id = cursor.lastrowid 
+
+        if nuevo_id:
+            connection.commit()
+            return {"id": nuevo_id}, None
+        else:
+            if connection:
+                connection.rollback()
+            return None, "No se pudo obtener el ID"
+
     except Exception as e:
-        return None, {"error": str(e), "status_code": 500}
+        if connection:
+            connection.rollback()
+        print(f"Error en create_fixture: {e}")
+        return None, str(e)
+
     finally:
-        conn.close()
+        if connection:
+            connection.close()
+
+
+        

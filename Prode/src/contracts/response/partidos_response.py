@@ -4,7 +4,7 @@ def _fecha_iso(value) -> str:
     return str(value)
 
 
-def partido_detalle_response(row: dict, status_code: int = 200) -> dict:
+def partido_detalle_response(row: dict, status_code: int = 201) -> dict:
     return {
         "id": row.get("id"),
         "equipo_local": row.get("local_team"),
