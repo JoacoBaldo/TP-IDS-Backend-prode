@@ -1,6 +1,7 @@
 from flask import jsonify, request
 
 from contracts.request.partidos_request import partido_reemplazo_request, partido_resultado_request
+from usecases.partidos.delete_partido import execute as delete_partido_execute
 from usecases.partidos.replace_partido import execute as replace_partido_execute
 from usecases.partidos.update_resultado import execute as update_resultado_execute
 
@@ -19,3 +20,7 @@ def put_replace_partido(partido_id: int):
     body = request.get_json() or {}
     payload = partido_reemplazo_request(body)
     return _as_http(replace_partido_execute(partido_id, payload))
+
+
+def delete_partido(partido_id: int):
+    return _as_http(delete_partido_execute(partido_id))
