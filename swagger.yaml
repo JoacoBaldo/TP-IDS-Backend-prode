@@ -3,16 +3,18 @@ info:
   title: TP Backend API
   description: API para el TP de Introducción al Desarrollo de Software
   version: 1.0.0
+
 servers:
-- url: http://localhost:5000
-  description: Desarrollo
+  - url: http://localhost:5000
+    description: Desarrollo
+
 paths:
-  /register:
+  /users/register:
     post:
       tags:
-      - Users
+        - Users
       summary: Crear un nuevo usuario
-      description: Crea un nuevo usuario en el sistema con email y password
+      description: Crea un nuevo usuario en el sistema con email, name y password
       requestBody:
         required: true
         content:
@@ -27,42 +29,154 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserResponse'
         '400':
-          description: Error en la solicitud (datos inválidos o email ya existe)
+          description: Error en la solicitud (datos inválidos)
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-  /partidos/{id}/prediccion:
+
+  /users/{user_id}:
     parameters:
-    - $ref: '#/components/parameters/IdPartido'
-    post:
-      summary: Registrar una predicción para un partido
+      - $ref: '#/components/parameters/IdUsuario'
+    get:
+      summary: "Obtener un usuario por ID"
       tags:
-      - Predicciones
+        - Users
+      responses:
+        '200':
+          description: Detalle del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /partidos/{partido_id}/resultado:
+    put:
+      tags:
+        - Partidos
+      summary: Cargar o actualizar resultado
+      description: |
+        Establece o modifica los goles del partido. Los goles deben ser enteros mayores o iguales a cero.
+      parameters:
+        - name: partido_id
+          in: path
+          required: true
+          description: Identificador del partido
+          schema:
+            type: integer
+            minimum: 1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Prediccion'
+              $ref: '#/components/schemas/PartidoResultadoRequest'
       responses:
-        '201':
-          $ref: '#/components/responses/Created'
+        '200':
+          description: Resultado guardado; cuerpo con el detalle del partido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartidoDetalleResponse'
         '400':
-          $ref: '#/components/responses/BadRequest'
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Partido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /partidos/{partido_id}:
+    put:
+      tags:
+        - Partidos
+      summary: Reemplazo total de datos del partido (opcional)
+      description: |
+        Reemplaza los campos obligatorios del partido (equipo local, equipo visitante, fecha, fase).
+        No modifica estadio, ciudad ni resultado ya cargado salvo que otra operación lo haga.
+      parameters:
+        - name: partido_id
+          in: path
+          required: true
+          description: Identificador del partido
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartidoReemplazoRequest'
+      responses:
+        '200':
+          description: Partido actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartidoDetalleResponse'
+        '400':
+          description: Datos inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Partido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
+  parameters:
+    IdUsuario:
+      name: user_id
+      in: path
+      required: true
+      description: ID del usuario
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    BadRequest:
+      description: Solicitud incorrecta
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
   schemas:
     User:
       type: object
       required:
-      - email
-      - password
+        - email
+        - password
+        - name
       properties:
         email:
           type: string
@@ -74,6 +188,11 @@ components:
           minLength: 6
           description: Password del usuario (mínimo 6 caracteres)
           example: password123
+        name:
+          type: string
+          description: Nombre del usuario
+          example: Juan Pérez
+
     UserResponse:
       type: object
       properties:
@@ -81,19 +200,24 @@ components:
           type: string
           description: Email del usuario creado
           example: test@example.com
+        name:
+          type: string
+          description: Nombre del usuario creado
+          example: Juan Pérez
         message:
           type: string
           description: Mensaje de respuesta
-          example: Usuario creado exitosamente
+          example: User created successfully
         status_code:
           type: integer
           description: Código de estado HTTP
           example: 201
+
     ErrorResponse:
       type: object
       required:
-      - error
-      - status_code
+        - error
+        - status_code
       properties:
         error:
           type: string
@@ -103,68 +227,114 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 400
-    Prediccion:
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+          example: 1
+        name:
+          type: string
+          description: Nombre del usuario
+          example: Juan Pérez
+        email:
+          type: string
+          format: email
+          description: Email del usuario
+          example: juan@example.com
+
+    PartidoResultadoRequest:
       type: object
       required:
-      - id_usuario
-      - local
-      - visitante
+        - goles_local
+        - goles_visitante
       properties:
-        id_usuario:
-          type: integer
-          example: 1
-        local:
+        goles_local:
           type: integer
           minimum: 0
+          description: Goles del equipo local
           example: 2
-        visitante:
+        goles_visitante:
           type: integer
           minimum: 0
+          description: Goles del equipo visitante
           example: 1
-  parameters:
-    IdPartido:
-      name: id
-      in: path
-      required: true
-      description: Identificador del partido
-      schema:
-        type: integer
-        minimum: 1
-  responses:
-    Created:
-      description: Requisito procesado exitosamente y recurso creado
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              status_code:
-                type: integer
-                example: 201
-              message:
-                type: string
-                example: Predicción registrada con éxito
-    BadRequest:
-      description: Error en la petición (datos faltantes o inválidos)
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    NotFound:
-      description: Recurso no encontrado
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Conflict:
-      description: Conflicto (La predicción ya existe)
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    InternalServerError:
-      description: Error interno del servidor
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
+
+    PartidoReemplazoRequest:
+      type: object
+      required:
+        - equipo_local
+        - equipo_visitante
+        - fecha
+        - fase
+      properties:
+        equipo_local:
+          type: string
+          minLength: 1
+          description: Equipo local
+          example: Argentina
+        equipo_visitante:
+          type: string
+          minLength: 1
+          description: Equipo visitante
+          example: Brasil
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido (ISO 8601)
+          example: '2026-06-15T18:00:00'
+        fase:
+          type: string
+          minLength: 1
+          description: Fase del torneo
+          example: Fase de grupos
+
+    PartidoDetalleResponse:
+      type: object
+      required:
+        - id
+        - equipo_local
+        - equipo_visitante
+        - fecha
+        - fase
+        - goles_local
+        - goles_visitante
+        - status_code
+      properties:
+        id:
+          type: integer
+          description: Identificador del partido
+          example: 1
+        equipo_local:
+          type: string
+          example: Argentina
+        equipo_visitante:
+          type: string
+          example: Brasil
+        estadio:
+          type: string
+          nullable: true
+          description: Estadio (si está cargado en el fixture)
+        ciudad:
+          type: string
+          nullable: true
+          description: Ciudad (si está cargada en el fixture)
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido
+        fase:
+          type: string
+          example: Fase de grupos
+        goles_local:
+          type: integer
+          minimum: 0
+        goles_visitante:
+          type: integer
+          minimum: 0
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 200
