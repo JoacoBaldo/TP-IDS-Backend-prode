@@ -14,6 +14,15 @@ def partido_reemplazo_request(data) -> dict:
     }
 
 
+def partido_creacion_request(body):
+    return {
+        "equipo_local": body.get("equipo_local"),
+        "equipo_visitante": body.get("equipo_visitante"),
+        "fecha": body.get("fecha"),
+        "fase": body.get("fase")
+    }
+
+
 def prediccion_request(data) -> dict:
     return {
         "user_id": data.get("id_usuario"),
