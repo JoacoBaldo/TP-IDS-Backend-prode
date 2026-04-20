@@ -21,3 +21,11 @@ def partido_creacion_request(body):
         "fecha": body.get("fecha"),
         "fase": body.get("fase")
     }
+
+
+def prediccion_request(data) -> dict:
+    return {
+        "user_id": data.get("id_usuario"),
+        "predicted_local_goals": data.get("local"),
+        "predicted_visitor_goals": data.get("visitante"),
+    }

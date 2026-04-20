@@ -17,3 +17,10 @@ def partido_detalle_response(row: dict, status_code: int = 201) -> dict:
         "goles_visitante": row.get("visitor_goals"),
         "status_code": status_code,
     }
+
+
+def prediccion_response(status_code: int = 201) -> dict:
+    return {
+        "status_code": status_code,
+        "message": "Predicción registrada con éxito"
+    }
