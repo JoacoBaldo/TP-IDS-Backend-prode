@@ -170,6 +170,67 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /partidos:
+    get:
+      tags:
+        - Partidos
+      summary: Listar partidos
+      description: Obtiene una lista paginada de partidos. Permite filtrar por equipo, fecha o fase.
+      parameters:
+        - in: query
+          name: equipo
+          schema:
+            type: string
+          description: Filtra partidos donde el equipo juegue de local o visitante
+        - in: query
+          name: fecha
+          schema:
+            type: string
+            format: date
+          description: Filtra por fecha exacta (ej. 2026-06-15)
+        - in: query
+          name: fase
+          schema:
+            type: string
+          description: Filtra por la fase del torneo
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Lista de partidos devuelta exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PartidoSinResultado'
+                  total:
+                    type: integer
+                  _links:
+                    type: object
+                  status_code:
+                    type: integer
+                    example: 200
+  
+  /partidos/{id}:
+    get:
+      tags:
+        - Partidos
+      summary: Obtener detalle de un partido
+      description: Devuelve toda la información de un partido específico usando su ID.
+      parameters:
+        - name: id
     delete:
       tags:
         - Partidos
@@ -185,6 +246,11 @@ paths:
             minimum: 1
       responses:
         '200':
+          description: Partido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartidoDetalleResponse'
           description: Partido eliminado exitosamente
           content:
             application/json:
@@ -335,6 +401,25 @@ components:
           description: Email del usuario
           example: juan@example.com
 
+    PartidoSinResultado:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        equipo_local:
+          type: string
+          example: Argentina
+        equipo_visitante:
+          type: string
+          example: Brasil
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido
+        fase:
+          type: string
+          example: Fase de grupos
     PartidoResultadoRequest:
       type: object
       required:
@@ -421,9 +506,11 @@ components:
         goles_local:
           type: integer
           minimum: 0
+          description: Goles del local (0 si aún no se cargó resultado)
         goles_visitante:
           type: integer
           minimum: 0
+          description: Goles del visitante (0 si aún no se cargó resultado)
         status_code:
           type: integer
           description: Código de estado HTTP
