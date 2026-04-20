@@ -2,7 +2,8 @@
 import sys
 import os
 from infrastructure.entrypoints.users import users
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, request, jsonify
+from usecases.users.update_user_use_case import execute as update_user_exec
 from infrastructure.entrypoints.partidos import partidos
 
 app = Flask(__name__)
@@ -17,6 +18,16 @@ partidos_bp = Blueprint('partidos', __name__, url_prefix='/partidos')
 def create_user_endpoint():
     return users.create_user()
 
+@users_bp.route('/<int:user_id>', methods=['PUT'])
+def update_user_endpoint(user_id):
+    user_req = request.get_json()
+
+    if not user_req:
+        return jsonify({"error": "Empty body"}), 400
+
+    result = update_user_exec(user_id, user_req)
+
+    return jsonify(result), result.get("status_code", 200)
 
 @partidos_bp.route('', methods=['GET'])
 def get_partidos_endpoint():

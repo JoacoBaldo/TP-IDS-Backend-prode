@@ -1,4 +1,4 @@
-openapi: 3.0.0
+         openapi: 3.0.0
 info:
   title: TP Backend API
   description: API para el TP de Introducción al Desarrollo de Software
@@ -54,6 +54,11 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /users/{user_id}:
+    put:
+      tags:
+        - Users
+      summary: Actualizar usuario
+      description: Actualiza el nombre y email de un usuario existente
     get:
       tags:
         - Users
@@ -66,6 +71,21 @@ paths:
           description: ID del usuario
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200':
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Error en la solicitud (datos inválidos o email duplicado)
             minimum: 1
       responses:
         '200':
@@ -80,6 +100,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Usuario no encontrado
         '500':
           description: Error interno del servidor
           content:
@@ -358,6 +380,19 @@ components:
           description: Código de estado HTTP
           example: 201
 
+    UserUpdate:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          example: Carlos Updated
+        email:
+          type: string
+          example: carlos@gmail.com
+
     ErrorResponse:
       type: object
       required:
@@ -511,6 +546,100 @@ components:
           type: integer
           minimum: 0
           description: Goles del visitante (0 si aún no se cargó resultado)
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 400
+
+    PartidoResultadoRequest:
+      type: object
+      required:
+        - goles_local
+        - goles_visitante
+      properties:
+        goles_local:
+          type: integer
+          minimum: 0
+          description: Goles del equipo local
+          example: 2
+        goles_visitante:
+          type: integer
+          minimum: 0
+          description: Goles del equipo visitante
+          example: 1
+
+    PartidoReemplazoRequest:
+      type: object
+      required:
+        - equipo_local
+        - equipo_visitante
+        - fecha
+        - fase
+      properties:
+        equipo_local:
+          type: string
+          minLength: 1
+          description: Equipo local
+          example: Argentina
+        equipo_visitante:
+          type: string
+          minLength: 1
+          description: Equipo visitante
+          example: Brasil
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido (ISO 8601)
+          example: '2026-06-15T18:00:00'
+        fase:
+          type: string
+          minLength: 1
+          description: Fase del torneo
+          example: Fase de grupos
+
+    PartidoDetalleResponse:
+      type: object
+      required:
+        - id
+        - equipo_local
+        - equipo_visitante
+        - fecha
+        - fase
+        - goles_local
+        - goles_visitante
+        - status_code
+      properties:
+        id:
+          type: integer
+          description: Identificador del partido
+          example: 1
+        equipo_local:
+          type: string
+          example: Argentina
+        equipo_visitante:
+          type: string
+          example: Brasil
+        estadio:
+          type: string
+          nullable: true
+          description: Estadio (si está cargado en el fixture)
+        ciudad:
+          type: string
+          nullable: true
+          description: Ciudad (si está cargada en el fixture)
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido
+        fase:
+          type: string
+          example: Fase de grupos
+        goles_local:
+          type: integer
+          minimum: 0
+        goles_visitante:
+          type: integer
+          minimum: 0
         status_code:
           type: integer
           description: Código de estado HTTP
