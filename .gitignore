@@ -1,5 +1,7 @@
 # Environment variables
 .env
+db.env
+*.env
 
 # Python cache
 __pycache__/
