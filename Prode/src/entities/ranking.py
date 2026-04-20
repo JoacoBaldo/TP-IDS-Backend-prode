@@ -1,7 +1,6 @@
-from datetime import datetime
+from typing import TypedDict
 
-Ranking = {
-    "user_id": int,
-    "points": int,
-    "updated_at": datetime.datetime,
-}
+
+class RankingEntry(TypedDict):
+    id_usuario: int
+    puntos: int

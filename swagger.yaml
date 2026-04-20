@@ -35,6 +35,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /ranking:
+    get:
+      tags:
+        - Ranking
+      summary: Ranking de usuarios por puntos de predicciones
+      description: |
+        Devuelve usuarios ordenados por puntos obtenidos al comparar predicciones
+        con resultados reales ya cargados (marcador exacto 3 pts; acierto de resultado 1 pt; fallo 0).
+        Paginación con limit y offset; incluye enlaces HATEOAS (first, prev, next, last).
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Cantidad de registros por página
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Desplazamiento desde el inicio del listado
+      responses:
+        '200':
+          description: Listado paginado del ranking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RankingListResponse'
+        '400':
+          description: Parámetros de paginación inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     User:
@@ -84,3 +125,41 @@ components:
           type: integer
           description: Código de estado HTTP
           example: 400
+
+    RankingEntry:
+      type: object
+      required:
+        - id_usuario
+        - puntos
+      properties:
+        id_usuario:
+          type: integer
+          description: Identificador del usuario
+        puntos:
+          type: integer
+          description: Puntos acumulados según reglas del Prode
+
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+        prev:
+          type: string
+        next:
+          type: string
+        last:
+          type: string
+
+    RankingListResponse:
+      type: object
+      required:
+        - data
+        - links
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RankingEntry'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'

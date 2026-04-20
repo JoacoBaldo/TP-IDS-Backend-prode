@@ -3,8 +3,8 @@ import sys
 import os
 from infrastructure.entrypoints.users import users
 from infrastructure.entrypoints.partidos import partidos
-from infrastructure.entrypoints.ranking.ranking import get_users_ranking
-from flask import Flask, Blueprint, jsonify
+from infrastructure.entrypoints.ranking.ranking import get_ranking
+from flask import Flask, Blueprint
 
 app = Flask(__name__)
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -29,10 +29,9 @@ def put_replace_partido_endpoint(partido_id: int):
     return partidos.put_replace_partido(partido_id)
 
 
-@ranking_bp.route('/', methods=['GET'])
+@ranking_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_ranking_endpoint():
-    ranking_data = get_users_ranking()
-    return jsonify(ranking_data)
+    return get_ranking()
 
 
 app.register_blueprint(users_bp)

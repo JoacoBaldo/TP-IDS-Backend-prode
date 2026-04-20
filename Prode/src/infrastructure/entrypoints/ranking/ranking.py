@@ -1,19 +1,26 @@
-from infrastructure.db_conn.mysql_config import get_connection
+from flask import jsonify, request
+
+from contracts.request.ranking_request import ranking_list_params
+from infrastructure.errors.ranking import ErrRankingPaginacionInvalida
+from usecases.ranking.get_ranking import execute as get_ranking_execute
 
 
-def get_users_ranking():
-    conn = get_connection()
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT u.name, COALESCE(r.total_points, 0) AS total_points
-                FROM users u
-                LEFT JOIN rankings r ON u.id = r.user_id
-                ORDER BY total_points DESC, u.name ASC
-                """,
-            )
-            rows = cursor.fetchall()
-            return [f"{row['name']} {row['total_points']}" for row in rows]
-    finally:
-        conn.close()
+def _as_http(resp: dict):
+    code = resp.get("status_code", 200)
+    body = resp.copy()
+    body.pop("status_code", None)
+    return jsonify(body), code
+
+
+def get_ranking():
+    params = ranking_list_params(request.args)
+    if not params.get("ok"):
+        return _as_http(ErrRankingPaginacionInvalida)
+
+    resp = get_ranking_execute(
+        params["limit"],
+        params["offset"],
+        request.base_url,
+        params["max_limit"],
+    )
+    return _as_http(resp)
