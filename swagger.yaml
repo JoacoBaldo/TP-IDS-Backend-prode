@@ -23,6 +23,24 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema con email, name y password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
           description: Usuario creado exitosamente
           content:
             application/json:
@@ -41,6 +59,11 @@ paths:
         - Users
       summary: Actualizar usuario
       description: Actualiza el nombre y email de un usuario existente
+    get:
+      tags:
+        - Users
+      summary: Obtener un usuario por ID
+      description: Obtiene los detalles de un usuario específico por su ID
       parameters:
         - name: user_id
           in: path
@@ -63,12 +86,24 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           description: Error en la solicitud (datos inválidos o email duplicado)
+            minimum: 1
+      responses:
+        '200':
+          description: Detalle del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '404':
+          description: Usuario no encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Usuario no encontrado
+        '500':
+          description: Error interno del servidor
           content:
             application/json:
               schema:
@@ -157,7 +192,151 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /partidos:
+    get:
+      tags:
+        - Partidos
+      summary: Listar partidos
+      description: Obtiene una lista paginada de partidos. Permite filtrar por equipo, fecha o fase.
+      parameters:
+        - in: query
+          name: equipo
+          schema:
+            type: string
+          description: Filtra partidos donde el equipo juegue de local o visitante
+        - in: query
+          name: fecha
+          schema:
+            type: string
+            format: date
+          description: Filtra por fecha exacta (ej. 2026-06-15)
+        - in: query
+          name: fase
+          schema:
+            type: string
+          description: Filtra por la fase del torneo
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Lista de partidos devuelta exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PartidoSinResultado'
+                  total:
+                    type: integer
+                  _links:
+                    type: object
+                  status_code:
+                    type: integer
+                    example: 200
+  
+  /partidos/{id}:
+    get:
+      tags:
+        - Partidos
+      summary: Obtener detalle de un partido
+      description: Devuelve toda la información de un partido específico usando su ID.
+      parameters:
+        - name: id
+    delete:
+      tags:
+        - Partidos
+      summary: Eliminar un partido
+      description: Elimina un partido de la base de datos por su ID
+      parameters:
+        - name: partido_id
+          in: path
+          required: true
+          description: Identificador del partido
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Partido encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PartidoDetalleResponse'
+          description: Partido eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchDeleteResponse'
+              example:
+                message: "El partido se eliminó correctamente"
+                status_code: 200
+        '400':
+          description: Identificador de partido inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Partido no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Partido no encontrado"
+                status_code: 404
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Error interno del servidor. Intenta más tarde"
+                status_code: 500
+
 components:
+  parameters:
+    IdUsuario:
+      name: user_id
+      in: path
+      required: true
+      description: ID del usuario
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    BadRequest:
+      description: Solicitud incorrecta
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
   schemas:
     User:
       type: object
@@ -223,7 +402,150 @@ components:
         error:
           type: string
           description: Mensaje de error
-          example: Email ya existe
+          example: El partido no existe
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 404
+    MatchDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de respuesta
+          example: El partido se eliminó correctamente
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 200
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+          example: 1
+        name:
+          type: string
+          description: Nombre del usuario
+          example: Juan Pérez
+        email:
+          type: string
+          format: email
+          description: Email del usuario
+          example: juan@example.com
+
+    PartidoSinResultado:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        equipo_local:
+          type: string
+          example: Argentina
+        equipo_visitante:
+          type: string
+          example: Brasil
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido
+        fase:
+          type: string
+          example: Fase de grupos
+    PartidoResultadoRequest:
+      type: object
+      required:
+        - goles_local
+        - goles_visitante
+      properties:
+        goles_local:
+          type: integer
+          minimum: 0
+          description: Goles del equipo local
+          example: 2
+        goles_visitante:
+          type: integer
+          minimum: 0
+          description: Goles del equipo visitante
+          example: 1
+
+    PartidoReemplazoRequest:
+      type: object
+      required:
+        - equipo_local
+        - equipo_visitante
+        - fecha
+        - fase
+      properties:
+        equipo_local:
+          type: string
+          minLength: 1
+          description: Equipo local
+          example: Argentina
+        equipo_visitante:
+          type: string
+          minLength: 1
+          description: Equipo visitante
+          example: Brasil
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido (ISO 8601)
+          example: '2026-06-15T18:00:00'
+        fase:
+          type: string
+          minLength: 1
+          description: Fase del torneo
+          example: Fase de grupos
+
+    PartidoDetalleResponse:
+      type: object
+      required:
+        - id
+        - equipo_local
+        - equipo_visitante
+        - fecha
+        - fase
+        - goles_local
+        - goles_visitante
+        - status_code
+      properties:
+        id:
+          type: integer
+          description: Identificador del partido
+          example: 1
+        equipo_local:
+          type: string
+          example: Argentina
+        equipo_visitante:
+          type: string
+          example: Brasil
+        estadio:
+          type: string
+          nullable: true
+          description: Estadio (si está cargado en el fixture)
+        ciudad:
+          type: string
+          nullable: true
+          description: Ciudad (si está cargada en el fixture)
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido
+        fase:
+          type: string
+          example: Fase de grupos
+        goles_local:
+          type: integer
+          minimum: 0
+          description: Goles del local (0 si aún no se cargó resultado)
+        goles_visitante:
+          type: integer
+          minimum: 0
+          description: Goles del visitante (0 si aún no se cargó resultado)
         status_code:
           type: integer
           description: Código de estado HTTP

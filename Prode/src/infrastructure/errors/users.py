@@ -2,6 +2,5 @@ ErrEmailAlreadyExists: dict  = {"error": "Email already exists", "status_code": 
 ErrMissingInformation: dict = {"error": "Missing email, name or password", "status_code": 400}
 ErrPasswordTooShort: dict = {"error": "Password must be at least 6 characters long", "status_code": 400}
 ErrInvalidEmailFormat: dict = {"error": "Invalid email format", "status_code": 400}
-ErrEmailAlreadyExists: dict = {"error": "Email already exists","status_code": 400}
-ErrMissingInformation: dict = {"error": "Missing email, name or password","status_code": 400}
 ErrInvalidId: dict = {"error": "Invalid ID","status_code": 400}
+ErrUserNotFound: dict = {"error": "User not found", "status_code": 404}
