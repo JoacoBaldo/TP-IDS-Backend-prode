@@ -13,44 +13,46 @@ def execute(payload: dict) -> dict:
     if not payload:
         return ErrReemplazoCamposFaltantes
 
-    campos = ["equipo_local", "equipo_visitante", "fecha", "fase"]
-    for c in campos:
-        if c not in payload:
+    required_fields = ["local_team", "visitor_team", "date_time", "phase"]
+    for field_name in required_fields:
+        if field_name not in payload:
             return ErrReemplazoCamposFaltantes
 
-    equipo_local = str(payload["equipo_local"]).strip()
-    equipo_visitante = str(payload["equipo_visitante"]).strip()
-    fecha = str(payload["fecha"]).strip()
-    fase = str(payload["fase"]).strip()
+    local_team = str(payload["local_team"]).strip()
+    visitor_team = str(payload["visitor_team"]).strip()
+    date_time_raw = str(payload["date_time"]).strip()
+    phase = str(payload["phase"]).strip()
 
-    if equipo_local == "" or equipo_visitante == "":
+    if local_team == "" or visitor_team == "":
         return ErrEquipoVacio
-    if fase == "" or fecha == "":
+    if phase == "" or date_time_raw == "":
         return ErrFaseVacia 
 
-    if fecha.endswith("Z"):
-        fecha = fecha[:-1] + "+00:00"
+    if date_time_raw.endswith("Z"):
+        date_time_raw = date_time_raw[:-1] + "+00:00"
     try:
-        fecha_dt = datetime.fromisoformat(fecha)
+        date_time = datetime.fromisoformat(date_time_raw)
     except ValueError:
         return ErrFechaInvalida
 
-    if fecha_dt.tzinfo is not None:
-        fecha_dt = fecha_dt.astimezone(timezone.utc).replace(tzinfo=None)
+    if date_time.tzinfo is not None:
+        date_time = date_time.astimezone(timezone.utc).replace(tzinfo=None)
 
-    nuevo_partido, err = create_fixture({
-    'equipo_local': equipo_local,
-    'equipo_visitante': equipo_visitante,
-    'fecha': fecha_dt,
-    'fase': fase
-    })
+    new_fixture, err = create_fixture(
+        {
+            "local_team": local_team,
+            "visitor_team": visitor_team,
+            "date_time": date_time,
+            "phase": phase,
+        }
+    )
 
     if err is not None:
         return err
 
-    nuevo_partido["local_team"] = equipo_local
-    nuevo_partido["visitor_team"] = equipo_visitante
-    nuevo_partido["date_time"] = fecha_dt
-    nuevo_partido["phase"] = fase
+    new_fixture["local_team"] = local_team
+    new_fixture["visitor_team"] = visitor_team
+    new_fixture["date_time"] = date_time
+    new_fixture["phase"] = phase
 
-    return partido_detalle_response(nuevo_partido, 201)
+    return partido_detalle_response(new_fixture, 201)

@@ -1,25 +1,25 @@
 def partido_resultado_request(data) -> dict:
     return {
-        "goles_local": data.get("goles_local"),
-        "goles_visitante": data.get("goles_visitante"),
+        "local_goals": data.get("goles_local"),
+        "visitor_goals": data.get("goles_visitante"),
     }
 
 
 def partido_reemplazo_request(data) -> dict:
     return {
-        "equipo_local": data.get("equipo_local"),
-        "equipo_visitante": data.get("equipo_visitante"),
-        "fecha": data.get("fecha"),
-        "fase": data.get("fase"),
+        "local_team": data.get("equipo_local"),
+        "visitor_team": data.get("equipo_visitante"),
+        "date_time": data.get("fecha"),
+        "phase": data.get("fase"),
     }
 
 
 def partido_creacion_request(body):
     return {
-        "equipo_local": body.get("equipo_local"),
-        "equipo_visitante": body.get("equipo_visitante"),
-        "fecha": body.get("fecha"),
-        "fase": body.get("fase")
+        "local_team": body.get("equipo_local"),
+        "visitor_team": body.get("equipo_visitante"),
+        "date_time": body.get("fecha"),
+        "phase": body.get("fase"),
     }
 
 

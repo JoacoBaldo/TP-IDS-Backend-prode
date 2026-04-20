@@ -16,19 +16,19 @@ def execute(fixture_id: int, payload: dict) -> dict:
     if not payload:
         return ErrResultadoCamposFaltantes
 
-    if "goles_local" not in payload or "goles_visitante" not in payload:
+    if "local_goals" not in payload or "visitor_goals" not in payload:
         return ErrResultadoCamposFaltantes
 
-    goles_local = payload["goles_local"]
-    goles_visitante = payload["goles_visitante"]
+    local_goals = payload["local_goals"]
+    visitor_goals = payload["visitor_goals"]
 
-    if type(goles_local) is not int or type(goles_visitante) is not int:
+    if type(local_goals) is not int or type(visitor_goals) is not int:
         return ErrGolesInvalidos
 
-    if goles_local < 0 or goles_visitante < 0:
+    if local_goals < 0 or visitor_goals < 0:
         return ErrGolesInvalidos
 
-    err = update_fixture_goals(fixture_id, goles_local, goles_visitante)
+    err = update_fixture_goals(fixture_id, local_goals, visitor_goals)
     if err is not None:
         return err
 

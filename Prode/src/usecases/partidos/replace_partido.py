@@ -20,54 +20,50 @@ def execute(fixture_id: int, payload: dict) -> dict:
     if not payload:
         return ErrReemplazoCamposFaltantes
 
-    if "equipo_local" not in payload:
-        return ErrReemplazoCamposFaltantes
-    if "equipo_visitante" not in payload:
-        return ErrReemplazoCamposFaltantes
-    if "fecha" not in payload:
-        return ErrReemplazoCamposFaltantes
-    if "fase" not in payload:
-        return ErrReemplazoCamposFaltantes
+    required_fields = ["local_team", "visitor_team", "date_time", "phase"]
+    for field_name in required_fields:
+        if field_name not in payload:
+            return ErrReemplazoCamposFaltantes
 
-    equipo_local = payload["equipo_local"]
-    equipo_visitante = payload["equipo_visitante"]
-    fecha = payload["fecha"]
-    fase = payload["fase"]
+    local_team = payload["local_team"]
+    visitor_team = payload["visitor_team"]
+    date_time_raw = payload["date_time"]
+    phase = payload["phase"]
 
-    if type(equipo_local) is not str or type(equipo_visitante) is not str:
+    if type(local_team) is not str or type(visitor_team) is not str:
         return ErrEquipoVacio
-    if type(fase) is not str:
+    if type(phase) is not str:
         return ErrFaseVacia
 
-    equipo_local = equipo_local.strip()
-    equipo_visitante = equipo_visitante.strip()
-    fase = fase.strip()
+    local_team = local_team.strip()
+    visitor_team = visitor_team.strip()
+    phase = phase.strip()
 
-    if equipo_local == "" or equipo_visitante == "":
+    if local_team == "" or visitor_team == "":
         return ErrEquipoVacio
-    if fase == "":
+    if phase == "":
         return ErrFaseVacia
 
-    if type(fecha) is not str:
+    if type(date_time_raw) is not str:
         return ErrFechaInvalida
 
-    fecha = fecha.strip()
-    if fecha == "":
+    date_time_raw = date_time_raw.strip()
+    if date_time_raw == "":
         return ErrFechaInvalida
 
-    if fecha.endswith("Z"):
-        fecha = fecha[:-1] + "+00:00"
+    if date_time_raw.endswith("Z"):
+        date_time_raw = date_time_raw[:-1] + "+00:00"
 
     try:
-        fecha_dt = datetime.fromisoformat(fecha)
+        date_time = datetime.fromisoformat(date_time_raw)
     except ValueError:
         return ErrFechaInvalida
 
-    if fecha_dt.tzinfo is not None:
-        fecha_dt = fecha_dt.astimezone(timezone.utc).replace(tzinfo=None)
+    if date_time.tzinfo is not None:
+        date_time = date_time.astimezone(timezone.utc).replace(tzinfo=None)
 
     err = replace_fixture_core(
-        fixture_id, equipo_local, equipo_visitante, fecha_dt, fase
+        fixture_id, local_team, visitor_team, date_time, phase
     )
     if err is not None:
         return err

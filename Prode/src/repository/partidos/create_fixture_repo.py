@@ -5,10 +5,10 @@ def create_fixture(partido_data):
         connection = get_connection()
         cursor = connection.cursor()
 
-        local_team = partido_data.get('equipo_local') 
-        visitor_team = partido_data.get('equipo_visitante')
-        date_time = partido_data.get('fecha')
-        phase = partido_data.get('fase')
+        local_team = partido_data.get("local_team")
+        visitor_team = partido_data.get("visitor_team")
+        date_time = partido_data.get("date_time")
+        phase = partido_data.get("phase")
 
         sql = "INSERT INTO fixtures (local_team, visitor_team, date_time, phase) VALUES (%s, %s, %s, %s)"
         cursor.execute(sql, (local_team, visitor_team, date_time, phase))
