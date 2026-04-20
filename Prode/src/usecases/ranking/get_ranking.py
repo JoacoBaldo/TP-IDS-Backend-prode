@@ -9,4 +9,11 @@ def execute(limit: int = DEFAULT_LIMIT, offset: int = 0) -> dict:
     
     total = count_users()
     rows = fetch_ranking_page(limit, offset)
-    return ranking_list_response(rows, total, limit, offset, "")
+    
+    # Transformación de datos (responsabilidad del usecase)
+    usuario_id_puntos = [
+        {"usuario_id": int(row["id_usuario"]), "puntos": int(row["puntos"])}
+        for row in rows
+    ]
+    
+    return ranking_list_response(usuario_id_puntos)
