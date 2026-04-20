@@ -16,9 +16,9 @@ def get_partidos_repo(equipo: str, fecha: str, fase: str, limit: int, offset: in
                 query_filtros += " AND phase = %s"
                 valores.append(fase)
 
-            query_total = f"SELECT COUNT(*) FROM fixtures WHERE 1=1 {query_filtros}"
+            query_total = f"SELECT COUNT(*) AS total FROM fixtures WHERE 1=1 {query_filtros}"
             cursor.execute(query_total, tuple(valores))
-            total = cursor.fetchone()[0]
+            total = int(cursor.fetchone()["total"])
 
             query_datos = f"""
                 SELECT id, local_team, visitor_team, date_time, phase 
@@ -33,11 +33,11 @@ def get_partidos_repo(equipo: str, fecha: str, fase: str, limit: int, offset: in
             items = []
             for row in rows:
                 items.append({
-                    "id": row[0],
-                    "equipo_local": row[1],
-                    "equipo_visitante": row[2],
-                    "fecha": str(row[3]),
-                    "fase": row[4]
+                    "id": row["id"],
+                    "equipo_local": row["local_team"],
+                    "equipo_visitante": row["visitor_team"],
+                    "fecha": str(row["date_time"]),
+                    "fase": row["phase"],
                 })
 
             return items, total

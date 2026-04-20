@@ -269,6 +269,14 @@ components:
           example: Argentina
         equipo_visitante:
           type: string
+          example: Brasil
+        fecha:
+          type: string
+          format: date-time
+          description: Fecha y hora del partido
+        fase:
+          type: string
+          example: Fase de grupos
     PartidoResultadoRequest:
       type: object
       required:
@@ -307,8 +315,6 @@ components:
         fecha:
           type: string
           format: date-time
-        fase:
-          type: string
           description: Fecha y hora del partido (ISO 8601)
           example: '2026-06-15T18:00:00'
         fase:
@@ -342,12 +348,6 @@ components:
         estadio:
           type: string
           nullable: true
-        ciudad:
-          type: string
-          nullable: true
-        fecha:
-          type: string
-          format: date-time
           description: Estadio (si está cargado en el fixture)
         ciudad:
           type: string
@@ -363,11 +363,12 @@ components:
         goles_local:
           type: integer
           minimum: 0
+          description: Goles del local (0 si aún no se cargó resultado)
         goles_visitante:
           type: integer
           minimum: 0
+          description: Goles del visitante (0 si aún no se cargó resultado)
         status_code:
           type: integer
-          example: 200
           description: Código de estado HTTP
           example: 200
