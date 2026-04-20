@@ -1,17 +1,13 @@
-
 import sys
 import os
+from flask import Flask, request, Blueprint, jsonify
 from infrastructure.entrypoints.users import users
 from infrastructure.entrypoints.matches.delete_match import delete_match
-from flask import Flask, request, Blueprint
-from contracts.request.users_request import create_user_request
-from contracts.response.users_response import create_user_response
 from infrastructure.entrypoints.partidos import partidos
 from infrastructure.entrypoints.matches.change_data import change_data
 
 app = Flask(__name__)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 partidos_bp = Blueprint('partidos', __name__, url_prefix='/partidos')
@@ -35,14 +31,23 @@ def put_replace_partido_endpoint(partido_id: int):
 
 @partidos_bp.route('/<int:partido_id>', methods=['PATCH'])
 def path_change_data_endpoint(partido_id: int):
-    return change_data(partido_id)
+    payload = request.get_json(silent=True)
+
+    if not payload:
+        return jsonify({"error": "No se proporcionaron campos para actualizar"}), 400
+
+    result = change_data(partido_id, payload)
+
+    if result is None:
+        return jsonify({"mensaje": "Partido actualizado parcialmente"}), 200
+
+    return jsonify({"error": result["error"]}), result["status_code"]
+
 
 app.register_blueprint(matches_bp)
 app.register_blueprint(users_bp)
 app.register_blueprint(partidos_bp)
 
 
-
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
-
