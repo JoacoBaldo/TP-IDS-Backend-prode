@@ -14,3 +14,11 @@ def get_user_response(user: dict) -> dict:
         "email": user["email"],
         "status_code": 200
     }
+
+
+def get_users_list_response(users: list, total: int, page: int, limit: int) -> dict:
+    return {
+        "users": users,
+        "message": "Users list retrieved successfully",
+        "status_code": 200
+    }

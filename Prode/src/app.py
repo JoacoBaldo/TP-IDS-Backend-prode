@@ -44,6 +44,11 @@ def get_partido_by_id_endpoint(partido_id: int):
 def get_user_endpoint(user_id: int):
     return users.get_user(user_id)
 
+@app.route('/usuarios', methods=['GET'])
+def get_users_list_endpoint():
+    return users.get_users_list()
+
+
 @partidos_bp.route('/<int:partido_id>/resultado', methods=['PUT'])
 def put_resultado_endpoint(partido_id: int):
     return partidos.put_resultado(partido_id)

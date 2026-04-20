@@ -1,5 +1,8 @@
 from infrastructure.db_conn.mysql_config import get_connection
 
+DEFAULT_LIMIT = 20
+MAX_LIMIT = 100
+
 
 def count_users() -> int:
     conn = get_connection()
