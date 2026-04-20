@@ -16,13 +16,6 @@ def get_user_response(user: dict) -> dict:
     }
 
 
-def get_users_ranking_response(rankings: list) -> dict:
-    return {
-        "rankings": rankings,
-        "status_code": 200
-    }
-
-
 def get_users_list_response(users: list, total: int, page: int, limit: int) -> dict:
     return {
         "users": users,

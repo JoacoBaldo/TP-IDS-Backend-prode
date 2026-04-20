@@ -17,11 +17,6 @@ def create_user_endpoint():
     return users.create_user()
 
 
-@app.route('/ranking', methods=['GET'])
-def get_users_ranking_endpoint():
-    return users.get_users_ranking()
-
-
 @app.route('/usuarios', methods=['GET'])
 def get_users_list_endpoint():
     return users.get_users_list()
