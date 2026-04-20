@@ -19,15 +19,13 @@ def get_users_list(page: int = DEFAULT_PAGE, limit: int = DEFAULT_LIMIT, sort_by
             total = cursor.fetchone()['total']
             
             offset = (page - 1) * limit
-            cursor.execute(
-                f"""
+            query = f"""
                 SELECT id, email, name, created_at
                 FROM users
                 ORDER BY {sort_by} {order.upper()}
                 LIMIT %s OFFSET %s
-                """,
-                (limit, offset)
-            )
+            """
+            cursor.execute(query, (limit, offset))
             users = cursor.fetchall()
             return users, total
     finally:
