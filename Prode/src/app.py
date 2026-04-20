@@ -7,7 +7,7 @@ from usecases.users.update_user_use_case import execute as update_user_exec
 from infrastructure.entrypoints.partidos import partidos
 
 app = Flask(__name__)
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
@@ -41,6 +41,11 @@ def get_partido_by_id_endpoint(partido_id: int):
 @users_bp.route('/<int:user_id>', methods=['GET'])
 def get_user_endpoint(user_id: int):
     return users.get_user(user_id)
+
+@app.route('/usuarios', methods=['GET'])
+def get_users_list_endpoint():
+    return users.get_users_list()
+
 
 @partidos_bp.route('/<int:partido_id>/resultado', methods=['PUT'])
 def put_resultado_endpoint(partido_id: int):
