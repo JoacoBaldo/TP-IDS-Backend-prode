@@ -44,6 +44,9 @@ def get_partido_by_id_endpoint(partido_id: int):
 def get_user_endpoint(user_id: int):
     return users.get_user(user_id)
 
+@users_bp.route('/<int:user_id>', methods=['DELETE'])
+def delete_user_endpoint(user_id):
+    return users.delete_usuario(user_id)
 @app.route('/usuarios', methods=['GET'])
 def get_users_list_endpoint():
     return users.get_users_list()
@@ -66,6 +69,9 @@ def post_prediccion_endpoint(partido_id: int):
     return partidos.post_prediccion(partido_id)
 
 
+@partidos_bp.route('', methods=['POST'])
+def create_partido_endpoint():
+    return partidos.post_partido()
 @ranking_bp.route('/', methods=['GET'], strict_slashes=False)
 def get_ranking_endpoint():
     return get_ranking()
