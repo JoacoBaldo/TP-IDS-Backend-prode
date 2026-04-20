@@ -5,6 +5,7 @@ from infrastructure.entrypoints.users import users
 from flask import Flask, Blueprint, request, jsonify
 from usecases.users.update_user_use_case import execute as update_user_exec
 from infrastructure.entrypoints.partidos import partidos
+from infrastructure.entrypoints.ranking.ranking import get_ranking
 
 app = Flask(__name__)
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -12,6 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 partidos_bp = Blueprint('partidos', __name__, url_prefix='/partidos')
+ranking_bp = Blueprint('ranking', __name__, url_prefix='/ranking')
 
 
 @users_bp.route('/register', methods=['POST'])
@@ -64,8 +66,14 @@ def post_prediccion_endpoint(partido_id: int):
     return partidos.post_prediccion(partido_id)
 
 
+@ranking_bp.route('/', methods=['GET'], strict_slashes=False)
+def get_ranking_endpoint():
+    return get_ranking()
+
+
 app.register_blueprint(users_bp)
 app.register_blueprint(partidos_bp)
+app.register_blueprint(ranking_bp)
 
 
 
