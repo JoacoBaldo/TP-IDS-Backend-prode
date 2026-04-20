@@ -75,7 +75,7 @@ def change_data(match_id: int, payload: dict):
         try:
             with conn.cursor() as cursor:
                 cursor.execute(query, tuple(values))
-                conn.commit()
+                conn.commit()   
                 if cursor.rowcount == 0:
                     return ErrPartidoNotFound
         finally:
