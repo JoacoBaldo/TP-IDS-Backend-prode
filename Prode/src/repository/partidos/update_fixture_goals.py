@@ -8,7 +8,7 @@ def update_fixture_goals(fixture_id: int, local_goals: int, visitor_goals: int) 
             cursor.execute(
                 """
                 UPDATE fixtures
-                SET local_goals = %s, visitor_goals = %s
+                SET local_goals = %s, visitor_goals = %s, status = 'finished'
                 WHERE id = %s
                 """,
                 (local_goals, visitor_goals, fixture_id),

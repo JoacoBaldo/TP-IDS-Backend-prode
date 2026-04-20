@@ -3,11 +3,17 @@ from repository.users.update_users import update_user_repository
 from infrastructure.errors.users import (
     ErrEmailAlreadyExists,
     ErrMissingInformation,
-    ErrInvalidId
+    ErrInvalidId,
+    ErrUserNotFound,
+    ErrEmptyBody
 )
+from contracts.response.users_response import update_user_response
 
 
 def execute(user_id: int, user_req: dict) -> dict:
+    if not user_req:
+        return ErrEmptyBody
+
     try:
         user_id = int(user_id)
     except:
@@ -23,12 +29,6 @@ def execute(user_id: int, user_req: dict) -> dict:
         return ErrEmailAlreadyExists
 
     if updated:
-        return {
-            "message": "Usuario actualizado correctamente",
-            "status_code": 200
-        }
+        return update_user_response(user_req)
 
-    return {
-        "error": "User not found",
-        "status_code": 404
-    }
+    return ErrUserNotFound
