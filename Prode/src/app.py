@@ -22,14 +22,7 @@ def create_user_endpoint():
 
 @users_bp.route('/<int:user_id>', methods=['PUT'])
 def update_user_endpoint(user_id):
-    user_req = request.get_json()
-
-    if not user_req:
-        return jsonify({"error": "Empty body"}), 400
-
-    result = update_user_exec(user_id, user_req)
-
-    return jsonify(result), result.get("status_code", 200)
+    return users.update_user(user_id)
 
 @partidos_bp.route('', methods=['GET'])
 def get_partidos_endpoint():

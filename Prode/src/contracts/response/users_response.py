@@ -16,6 +16,15 @@ def get_user_response(user: dict) -> dict:
     }
 
 
+def update_user_response(user: dict) -> dict:
+    return {
+        "email": user["email"],
+        "name": user["name"],
+        "message": "Usuario actualizado correctamente",
+        "status_code": 200
+    }
+
+
 def get_users_list_response(users: list, total: int, page: int, limit: int) -> dict:
     return {
         "users": users,

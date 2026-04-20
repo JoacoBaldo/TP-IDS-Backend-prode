@@ -3,6 +3,7 @@ from contracts.request.users_request import create_user_request, get_users_list_
 from usecases.users.create_user import execute as create_user_execute
 from usecases.users.get_users_list import execute as get_users_list_execute
 from usecases.users.get_user import execute as get_user_execute
+from usecases.users.update_user_use_case import execute as update_user_execute
 
 
 def create_user():
@@ -24,5 +25,13 @@ def get_users_list():
 
 def get_user(user_id: int):
     response = get_user_execute(user_id)
+    status_code = response.pop("status_code", 200)
+    return jsonify(response), status_code
+
+
+def update_user(user_id: int):
+    user_req = request.get_json()
+    response = update_user_execute(user_id, user_req)
+
     status_code = response.pop("status_code", 200)
     return jsonify(response), status_code
