@@ -23,6 +23,24 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
+          $ref: '#/components/responses/Created'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /users/register:
+    post:
+      tags:
+        - Users
+      summary: Crear un nuevo usuario
+      description: Crea un nuevo usuario en el sistema con email, name y password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
           description: Usuario creado exitosamente
           content:
             application/json:
@@ -30,6 +48,40 @@ paths:
                 $ref: '#/components/schemas/UserResponse'
         '400':
           description: Error en la solicitud (datos inválidos)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{user_id}:
+    get:
+      tags:
+        - Users
+      summary: Obtener un usuario por ID
+      description: Obtiene los detalles de un usuario específico por su ID
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          description: ID del usuario
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Detalle del usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Usuario'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error interno del servidor
           content:
             application/json:
               schema:
@@ -179,6 +231,13 @@ paths:
       description: Devuelve toda la información de un partido específico usando su ID.
       parameters:
         - name: id
+    delete:
+      tags:
+        - Partidos
+      summary: Eliminar un partido
+      description: Elimina un partido de la base de datos por su ID
+      parameters:
+        - name: partido_id
           in: path
           required: true
           description: Identificador del partido
@@ -192,14 +251,70 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PartidoDetalleResponse'
+          description: Partido eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatchDeleteResponse'
+              example:
+                message: "El partido se eliminó correctamente"
+                status_code: 200
+        '400':
+          description: Identificador de partido inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Partido no encontrado
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Partido no encontrado"
+                status_code: 404
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error: "Error interno del servidor. Intenta más tarde"
+                status_code: 500
 
 components:
+  parameters:
+    IdUsuario:
+      name: user_id
+      in: path
+      required: true
+      description: ID del usuario
+      schema:
+        type: integer
+        minimum: 1
+
+  responses:
+    BadRequest:
+      description: Solicitud incorrecta
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalServerError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
   schemas:
     User:
       type: object
@@ -252,11 +367,39 @@ components:
         error:
           type: string
           description: Mensaje de error
-          example: Email ya existe
+          example: El partido no existe
         status_code:
           type: integer
           description: Código de estado HTTP
-          example: 400
+          example: 404
+    MatchDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Mensaje de respuesta
+          example: El partido se eliminó correctamente
+        status_code:
+          type: integer
+          description: Código de estado HTTP
+          example: 200
+
+    Usuario:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID del usuario
+          example: 1
+        name:
+          type: string
+          description: Nombre del usuario
+          example: Juan Pérez
+        email:
+          type: string
+          format: email
+          description: Email del usuario
+          example: juan@example.com
 
     PartidoSinResultado:
       type: object

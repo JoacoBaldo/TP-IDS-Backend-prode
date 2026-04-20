@@ -1,10 +1,12 @@
 from flask import jsonify, request
 
-from contracts.request.partidos_request import partido_reemplazo_request, partido_resultado_request
+from contracts.request.partidos_request import partido_reemplazo_request, partido_resultado_request, prediccion_request
 from usecases.partidos.replace_partido import execute as replace_partido_execute
 from usecases.partidos.update_resultado import execute as update_resultado_execute
 from usecases.partidos.get_partidos import execute as get_partidos_execute
 from usecases.partidos.get_partido import execute as get_partido_execute
+from usecases.partidos.create_prediction import execute as create_prediction_execute
+from usecases.partidos.delete_partido import execute as delete_partido_execute
 
 
 def _as_http(resp: dict):
@@ -40,3 +42,11 @@ def put_replace_partido(partido_id: int):
 def get_partido_by_id(partido_id: int):
     respuesta = get_partido_execute(partido_id)
     return _as_http(respuesta)
+def delete_partido(partido_id: int):
+    return _as_http(delete_partido_execute(partido_id))
+  
+def post_prediccion(partido_id: int):
+    body = request.get_json() or {}
+    prediction_data = prediccion_request(body)
+    response = create_prediction_execute(partido_id, prediction_data)
+    return _as_http(response)
