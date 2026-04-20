@@ -7,10 +7,18 @@ def create_user_response(user: dict) -> dict:
     }
 
 
-def get_users_ranking_response(users: list) -> dict:
+def get_user_response(user: dict) -> dict:
     return {
-        "users": users,
-        "message": "Users ranking retrieved successfully",
+        "id": user["id"],
+        "name": user["name"],
+        "email": user["email"],
+        "status_code": 200
+    }
+
+
+def get_users_ranking_response(rankings: list) -> dict:
+    return {
+        "rankings": rankings,
         "status_code": 200
     }
 
@@ -18,12 +26,6 @@ def get_users_ranking_response(users: list) -> dict:
 def get_users_list_response(users: list, total: int, page: int, limit: int) -> dict:
     return {
         "users": users,
-        "pagination": {
-            "page": page,
-            "limit": limit,
-            "total": total,
-            "total_pages": (total + limit - 1) // limit  
-        },
         "message": "Users list retrieved successfully",
         "status_code": 200
     }
