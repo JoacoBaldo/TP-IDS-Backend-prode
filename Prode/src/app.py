@@ -7,6 +7,7 @@ from flask import Flask, request, Blueprint
 from contracts.request.users_request import create_user_request
 from contracts.response.users_response import create_user_response
 from infrastructure.entrypoints.partidos import partidos
+from infrastructure.entrypoints.matches.change_data import change_data
 
 app = Flask(__name__)
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -31,6 +32,10 @@ def put_resultado_endpoint(partido_id: int):
 @partidos_bp.route('/<int:partido_id>', methods=['PUT'])
 def put_replace_partido_endpoint(partido_id: int):
     return partidos.put_replace_partido(partido_id)
+
+@partidos_bp.route('/<int:partido_id>', methods=['PATCH'])
+def path_change_data_endpoint(partido_id: int):
+    return change_data(partido_id)
 
 app.register_blueprint(matches_bp)
 app.register_blueprint(users_bp)
